@@ -1,0 +1,28 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "instance_type": "t2.micro",
+    "source_ami": "ami-28e07e50",
+    "ssh_username": "ec2-user",
+    "ami_name": "arango-db-{{timestamp}}"
+  }],
+
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "sudo yum update -y",
+      "sudo yum install curl -y",
+      "sudo sysctl -w 'vm.max_map_count=128000'",
+      "cd /etc/yum.repos.d/",
+      "sudo curl -OL https://download.arangodb.com/arangodb36/RPM/arangodb.repo",
+      "sudo yum -y install arangodb3"
+    ]
+  }]
+}
